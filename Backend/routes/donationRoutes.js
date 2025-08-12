@@ -45,10 +45,33 @@ router.post('/', async (req, res) => {
         // Validate request body
         const { error, value } = donationValidationSchema.validate(req.body);
         if (error) {
+            const errorMessages = error.details.map(detail => {
+                const field = detail.path.join('.');
+                switch (detail.type) {
+                    case 'any.required':
+                        return `${field} is required`;
+                    case 'string.email':
+                        return 'Please enter a valid email address';
+                    case 'string.pattern.base':
+                        if (field.includes('phone')) {
+                            return 'Please enter a valid phone number';
+                        }
+                        return `${field} format is invalid`;
+                    case 'number.min':
+                        return `${field} must be at least ${detail.context.limit}`;
+                    case 'number.max':
+                        return `${field} must be no more than ${detail.context.limit}`;
+                    case 'any.only':
+                        return `Please select a valid ${field}`;
+                    default:
+                        return detail.message;
+                }
+            });
+            
             return res.status(400).json({
                 success: false,
-                message: 'Validation error',
-                errors: error.details.map(detail => detail.message)
+                message: 'Please fix the following errors:',
+                errors: errorMessages
             });
         }
 

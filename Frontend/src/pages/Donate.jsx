@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Heart, Info, CheckCircle, AlertCircle, Loader, Shield, Award, Users } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
+import { apiPost } from '../utils/api';
 
 const Donate = () => {
     const [formData, setFormData] = useState({
@@ -21,8 +23,7 @@ const Donate = () => {
 
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
-    const [submitMessage, setSubmitMessage] = useState('');
+    const { showSuccess, showError } = useToast();
 
     const donationPurposes = [
         'Education & Scholarships',
@@ -123,7 +124,6 @@ const Donate = () => {
         }
 
         setIsSubmitting(true);
-        setSubmitStatus(null);
 
         try {
             // Transform data to match backend schema
@@ -154,56 +154,32 @@ const Donate = () => {
                 notes: formData.orderNotes || `Donation Purpose: ${formData.donationPurpose}${formData.preferredSector ? `, Preferred Sector: ${formData.preferredSector}` : ''}`
             };
 
-            const response = await fetch('http://localhost:5000/api/donations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(donationData),
+            const result = await apiPost('/api/donations', donationData);
+            
+            showSuccess('Thank you for your generous donation! Your contribution will make a real difference. You will receive a tax exemption certificate via email within 24 hours.');
+            
+            // Reset form on success
+            setFormData({
+                firstName: '',
+                lastName: '',
+                email: '',
+                phone: '',
+                panCard: '',
+                donationPurpose: '',
+                address: '',
+                city: '',
+                state: '',
+                postcode: '',
+                orderNotes: '',
+                publicVisibility: false,
+                preferredSector: '',
+                amount: ''
             });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                setSubmitStatus('success');
-                setSubmitMessage('Thank you for your generous donation! Your contribution will make a real difference. You will receive a tax exemption certificate via email within 24 hours.');
-                // Reset form on success
-                setFormData({
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    phone: '',
-                    panCard: '',
-                    donationPurpose: '',
-                    address: '',
-                    city: '',
-                    state: '',
-                    postcode: '',
-                    orderNotes: '',
-                    publicVisibility: false,
-                    preferredSector: '',
-                    amount: ''
-                });
-                // Clear any existing errors
-                setErrors({});
-            } else {
-                // Handle validation errors from backend
-                if (data.errors && Array.isArray(data.errors)) {
-                    setSubmitStatus('error');
-                    setSubmitMessage(`Please fix the following errors: ${data.errors.join(', ')}`);
-                } else {
-                    setSubmitStatus('error');
-                    setSubmitMessage(data.message || 'Failed to submit donation. Please try again.');
-                }
-            }
+            // Clear any existing errors
+            setErrors({});
         } catch (error) {
             console.error('Donation submission error:', error);
-            setSubmitStatus('error');
-            if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                setSubmitMessage('Unable to connect to the server. Please check your internet connection and try again.');
-            } else {
-                setSubmitMessage('Sorry, there was an unexpected error. Please try again.');
-            }
+            showError(error.message || 'Failed to submit donation. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -257,22 +233,7 @@ const Donate = () => {
 
             <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
 
-                {/* Success/Error Messages */}
-                {submitStatus && (
-                    <div className={`mb-12 p-8 rounded-2xl flex items-center shadow-lg ${submitStatus === 'success'
-                        ? 'bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200'
-                        : 'bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200'
-                        }`}>
-                        {submitStatus === 'success' ? (
-                            <CheckCircle className="h-8 w-8 text-green-600 mr-6 flex-shrink-0" />
-                        ) : (
-                            <AlertCircle className="h-8 w-8 text-red-600 mr-6 flex-shrink-0" />
-                        )}
-                        <p className={`text-xl font-semibold ${submitStatus === 'success' ? 'text-green-800' : 'text-red-800'}`}>
-                            {submitMessage}
-                        </p>
-                    </div>
-                )}
+
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
                     {/* Donation Amount Section */}

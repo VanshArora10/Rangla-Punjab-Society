@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 const connectDB = require("./config/db");
 const donationRoutes = require("./routes/donationRoutes");
 const contactRoutes = require("./routes/contactRoutes");
@@ -46,25 +47,41 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Routes
+// API Routes
 app.use("/api/donations", donationRoutes);
 app.use("/api/contact", contactRoutes);
 
-// 404 handler
-app.use('*', (req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Route not found'
-    });
+// Serve static files from the React app build directory
+app.use(express.static(path.join(__dirname, '../Frontend/dist')));
+
+// Handle React Router - send index.html for all non-API routes
+app.get('*', (req, res) => {
+    // Don't serve index.html for API routes
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({
+            success: false,
+            message: 'API endpoint not found',
+            error: 'The requested API endpoint does not exist',
+            path: req.path
+        });
+    }
+    
+    // Serve index.html for all other routes (React Router)
+    res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
 });
 
 // Global error handler
 app.use((error, req, res, next) => {
     console.error('Global error:', error);
+    
+    // Don't send error details in production
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
     res.status(500).json({
         success: false,
         message: 'Internal server error',
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+        error: isDevelopment ? error.message : 'Something went wrong on our end. Please try again later.',
+        ...(isDevelopment && { stack: error.stack })
     });
 });
 
@@ -73,4 +90,5 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
     console.log(`📱 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`);
     console.log(`🗄️  Database: ${process.env.MONGO_URI ? 'Connected' : 'Not configured'}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });

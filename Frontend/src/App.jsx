@@ -10,6 +10,7 @@ import KeyPartner from "./pages/KeyPartner";
 import Donations from "./pages/Donations";
 import Contact from "./pages/Contact";
 import Donate from "./pages/Donate";
+import { ToastProvider } from "./context/ToastContext";
 
 function App() {
   const router = createBrowserRouter(
@@ -51,7 +52,9 @@ function App() {
     ]
   )
   return (
-    <RouterProvider router={router} />
+    <ToastProvider>
+      <RouterProvider router={router} />
+    </ToastProvider>
   );
 }
 

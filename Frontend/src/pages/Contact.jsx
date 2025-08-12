@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock, FaPaperPlane } from 'react-icons/fa';
+import { useToast } from '../context/ToastContext';
+import { apiPost } from '../utils/api';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -11,7 +13,7 @@ const Contact = () => {
     });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [submitStatus, setSubmitStatus] = useState(null);
+    const { showSuccess, showError } = useToast();
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -51,43 +53,21 @@ const Contact = () => {
         if (!validateForm()) return;
 
         setIsSubmitting(true);
-        setSubmitStatus(null);
         
         try {
-            const response = await fetch('http://localhost:5000/api/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+            const result = await apiPost('/api/contact', formData);
+            
+            showSuccess(result.message || 'Thank you! Your message has been sent successfully.');
+            setFormData({
+                firstName: '',
+                lastName: '',
+                email: '',
+                subject: '',
+                message: ''
             });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                setSubmitStatus({
-                    type: 'success',
-                    message: result.message
-                });
-                setFormData({
-                    firstName: '',
-                    lastName: '',
-                    email: '',
-                    subject: '',
-                    message: ''
-                });
-            } else {
-                setSubmitStatus({
-                    type: 'error',
-                    message: result.message || 'Failed to send message. Please try again.'
-                });
-            }
         } catch (error) {
             console.error('Contact submission error:', error);
-            setSubmitStatus({
-                type: 'error',
-                message: 'Network error. Please check your connection and try again.'
-            });
+            showError(error.message || 'Failed to send message. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -196,16 +176,7 @@ const Contact = () => {
                             Send Us a Message
                         </h2>
 
-                        {/* Status Messages */}
-                        {submitStatus && (
-                            <div className={`mb-6 p-4 rounded-xl ${
-                                submitStatus.type === 'success' 
-                                    ? 'bg-green-100 border border-green-300 text-green-800' 
-                                    : 'bg-red-100 border border-red-300 text-red-800'
-                            }`}>
-                                {submitStatus.message}
-                            </div>
-                        )}
+
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid md:grid-cols-2 gap-6">

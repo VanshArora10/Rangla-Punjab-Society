@@ -10,6 +10,10 @@ A modern, responsive NGO website built with React frontend and Node.js backend, 
 - **Focus Areas**: Detailed information about NGO initiatives
 - **Key Partners**: Showcase of organizational partnerships
 - **Admin Dashboard**: Backend management for donations and contacts
+- **Toast Notifications**: Smooth, modern toast notifications for user feedback
+- **Improved Error Handling**: Detailed, user-friendly error messages
+- **Production-Ready**: Single-server deployment with automatic frontend serving
+- **React Router Support**: Server handles client-side routing seamlessly
 
 ## 🛠️ Tech Stack
 
@@ -40,9 +44,11 @@ NGO/
 │   └── Server.js           # Main server file
 ├── Frontend/               # React frontend application
 │   ├── src/
-│   │   ├── component/      # Reusable components
+│   │   ├── component/      # Reusable components (Toast, etc.)
+│   │   ├── context/        # React contexts (ToastContext)
 │   │   ├── layout/         # Layout components
 │   │   ├── pages/          # Page components
+│   │   ├── utils/          # Utility functions (api.js)
 │   │   └── assets/         # Images and static files
 │   └── index.html          # Entry point
 └── README.md               # This file
@@ -85,27 +91,48 @@ NGO/
 
 ## 🌐 Deployment
 
+### Production Deployment (Recommended)
+
+The application is now configured to serve both frontend and backend from a single server, making deployment much simpler:
+
+1. **Build the frontend**:
+   ```bash
+   cd Frontend
+   npm run build
+   ```
+
+2. **Deploy the entire project** to your hosting service (Render, Heroku, Railway, etc.)
+
+3. **Set environment variables**:
+   - `MONGO_URI`: Your MongoDB connection string
+   - `NODE_ENV`: Set to "production"
+   - `PORT`: Your hosting service will provide this
+
+4. **Start the server**:
+   ```bash
+   cd Backend
+   npm start
+   ```
+
+The server will automatically serve the React frontend from the `Frontend/dist/` directory and handle all API requests.
+
 ### Render Deployment
 
-This project includes a `render.yaml` configuration for easy deployment on Render:
+This project is optimized for Render deployment:
 
 1. **Connect your GitHub repository to Render**
-2. **Use the render.yaml file** for automatic service creation
-3. **Set environment variables** in Render dashboard:
+2. **Set environment variables** in Render dashboard:
    - `MONGO_URI`: Your MongoDB connection string
-   - `JWT_SECRET`: Secret key for JWT tokens
-   - `FRONTEND_URL`: Your frontend domain
+   - `NODE_ENV`: production
+3. **Build Command**: `cd Frontend && npm install && npm run build`
+4. **Start Command**: `cd Backend && npm install && npm start`
 
-### Manual Deployment
+### Development vs Production
 
-#### Backend
-- Deploy to any Node.js hosting service
-- Set environment variables
-- Ensure MongoDB is accessible
-
-#### Frontend
-- Build: `npm run build`
-- Deploy `dist/` folder to any static hosting service
+- **Development**: Frontend runs on `localhost:5173`, Backend on `localhost:5000`
+- **Production**: Both frontend and backend served from the same domain
+- **API Calls**: Automatically handled by the `api.js` utility
+- **React Router**: Handled by the server serving `index.html` for all non-API routes
 
 ## 📚 API Endpoints
 
