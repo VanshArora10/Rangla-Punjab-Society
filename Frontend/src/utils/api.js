@@ -1,8 +1,8 @@
 // API utility for making requests
 const getBaseUrl = () => {
-    // In production, the API is served from the same domain
+    // In production, use the deployed backend URL
     if (import.meta.env.PROD) {
-        return '';
+        return 'https://your-backend-url.onrender.com'; // Replace with your actual backend URL
     }
     // In development, use localhost
     return 'http://localhost:5000';
