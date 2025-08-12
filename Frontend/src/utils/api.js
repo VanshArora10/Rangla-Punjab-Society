@@ -4,10 +4,10 @@ const getBaseUrl = () => {
     const envUrl = (import.meta.env.VITE_API_BASE_URL || '').trim();
     if (envUrl) return envUrl.replace(/\/$/, '');
 
-    // In production, try same-origin as a sensible default for API-only servers
+    // In production, require explicit API base URL to avoid calling the frontend origin
     if (import.meta.env.PROD) {
-        // In production for separate deployments, env must be provided
-        // Fallback to same-origin only if frontend and backend are on the same domain
+        // If not provided, we still return same-origin for backward compatibility,
+        // but apiCall will error on non-JSON responses to surface misconfiguration.
         if (typeof window !== 'undefined' && window.location?.origin) {
             return window.location.origin.replace(/\/$/, '');
         }
@@ -31,28 +31,34 @@ export const apiCall = async (endpoint, options = {}) => {
     try {
         const response = await fetch(url, defaultOptions);
 
-        // Try to parse JSON, but gracefully handle empty/non-JSON responses
+        const contentType = response.headers.get('content-type') || '';
+        const isJson = contentType.includes('application/json');
+
+        // If the response isn't JSON but is OK, this likely means the frontend origin
+        // returned an HTML page (e.g., index.html). Treat as misconfiguration.
+        if (response.ok && !isJson) {
+            const text = await response.text().catch(() => '');
+            const hint = import.meta.env.PROD
+                ? 'Set VITE_API_BASE_URL to your backend URL in the frontend environment.'
+                : 'Ensure the API is reachable and returns JSON.';
+            throw new Error(
+                `Unexpected non-JSON response from API. ${hint}`
+            );
+        }
+
+        // Parse JSON (or surface a clear error if parsing fails)
         let data = null;
         try {
             data = await response.json();
-        } catch (parseErr) {
-            // Fallback: read as text and surface useful error messages
+        } catch {
             const text = await response.text().catch(() => '');
             if (!response.ok) {
-                const message = (data && data.message) || text || response.statusText || 'Request failed';
-                throw new Error(message);
+                throw new Error(text || response.statusText || 'Request failed');
             }
-            // Successful but non-JSON/empty body
-            if (text) {
-                try {
-                    data = JSON.parse(text);
-                } catch {
-                    data = { message: text };
-                }
-            } else {
-                // No content (e.g., 204)
-                return null;
-            }
+            // No content (e.g., 204)
+            if (!text) return null;
+            // Non-JSON success should have been caught above; treat as error here too
+            throw new Error('Failed to parse API response as JSON.');
         }
 
         if (!response.ok) {
