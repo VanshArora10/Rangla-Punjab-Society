@@ -55,7 +55,13 @@ app.get('/api/health', (req, res) => {
         success: true,
         message: 'Server is running',
         timestamp: new Date().toISOString(),
-        uptime: process.uptime()
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development',
+        database: {
+            configured: Boolean(process.env.MONGO_URI),
+            name: (require('mongoose').connection && require('mongoose').connection.name) || null,
+            readyState: (require('mongoose').connection && require('mongoose').connection.readyState) || 0
+        }
     });
 });
 

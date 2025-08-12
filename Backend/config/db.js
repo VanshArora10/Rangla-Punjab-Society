@@ -13,7 +13,7 @@ const connectDB = async () => {
             serverSelectionTimeoutMS: 5000, // fail fast if cluster unreachable
             dbName: process.env.NODE_ENV === 'production' ? 'ngo_database' : 'rangla_punjab'
         });
-        console.log('✅ MongoDB connected');
+        console.log(`✅ MongoDB connected to db "${mongoose.connection.name}"`);
     } catch (err) {
         console.error('❌ MongoDB connection error:', err.message);
         process.exit(1);
@@ -21,7 +21,7 @@ const connectDB = async () => {
 };
 
 // helpful connection event logs
-mongoose.connection.on('connected', () => console.log('Mongoose event: connected'));
+mongoose.connection.on('connected', () => console.log(`Mongoose event: connected to db "${mongoose.connection.name}"`));
 mongoose.connection.on('error', (err) => console.error('Mongoose event: error', err));
 mongoose.connection.on('disconnected', () => console.warn('Mongoose event: disconnected'));
 

@@ -62,6 +62,8 @@ router.post('/', async (req, res) => {
 
         await contact.save();
 
+        console.log(`📥 Contact saved: id=${contact._id} subject=${contact.subject} email=${contact.email}`);
+
         res.status(201).json({
             success: true,
             message: 'Thank you! Your message has been sent successfully.',
