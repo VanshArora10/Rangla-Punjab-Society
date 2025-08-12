@@ -177,6 +177,9 @@ const PeopleFirstAgenda = () => {
                             </p>
 
                             <button
+                                onClick={() => {
+                                    window.location.href = "/about";
+                                }}
                                 className="px-6 py-3 rounded-md font-semibold text-white shadow-md transition-transform transform hover:scale-105"
                                 style={{ backgroundColor: "#F59E0B" }}
                                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FBBF24")}

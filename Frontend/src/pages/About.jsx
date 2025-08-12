@@ -29,6 +29,9 @@ const About = () => (
 
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button
+                                onClick={() => {
+                                    window.location.href = "/contact";
+                                }}
                                 className="text-white px-8 py-4 rounded-lg font-semibold transform hover:scale-105 transition-all duration-200 shadow-md flex items-center justify-center space-x-2"
                                 style={{
                                     backgroundColor: "#F59E0B",

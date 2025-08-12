@@ -67,6 +67,17 @@ const KeyPartner = () => {
         { img: MahindraImg, name: "Mahindra" }
     ];
 
+    // Function to scroll to partners section
+    const scrollToPartners = () => {
+        const partnersSection = document.getElementById('partners-section');
+        if (partnersSection) {
+            partnersSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+
     return (
         <div className="min-h-screen">
             {/* Hero Section - Clean and Simple */}
@@ -86,6 +97,7 @@ const KeyPartner = () => {
                             </p>
 
                             <button
+                                onClick={scrollToPartners}
                                 className="px-6 py-3 rounded-md font-semibold text-white shadow-md transition-transform transform hover:scale-105"
                                 style={{ backgroundColor: "#F59E0B" }}
                                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FBBF24")}
@@ -111,7 +123,7 @@ const KeyPartner = () => {
 
 
             {/* Partners Section */}
-            <section className="py-16 bg-white">
+            <section id="partners-section" className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 font-serif mb-4">
@@ -153,7 +165,11 @@ const KeyPartner = () => {
                     <p className="text-lg text-gray-600 mb-8">
                         Be part of Punjab's growth story. Partner with us to create lasting impact and drive positive change.
                     </p>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
+                    <button 
+                    onClick={() => {
+                        window.location.href = "/contact";
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors duration-200">
                         Become a Partner
                     </button>
                 </div>
