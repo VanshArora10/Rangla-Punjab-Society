@@ -6,6 +6,8 @@ const getBaseUrl = () => {
 
     // In production, try same-origin as a sensible default for API-only servers
     if (import.meta.env.PROD) {
+        // In production for separate deployments, env must be provided
+        // Fallback to same-origin only if frontend and backend are on the same domain
         if (typeof window !== 'undefined' && window.location?.origin) {
             return window.location.origin.replace(/\/$/, '');
         }

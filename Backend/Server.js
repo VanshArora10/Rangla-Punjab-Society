@@ -64,16 +64,20 @@ app.use("/api/donations", donationRoutes);
 app.use("/api/contact", contactRoutes);
 
 // API-only server (for separate frontend/backend deployment)
+// Return JSON 404 for any unknown /api/* route and method
+app.all('/api/*', (req, res, next) => {
+    // If reached here, no previous route matched
+    return res.status(404).json({
+        success: false,
+        message: 'API endpoint not found',
+        error: 'The requested API endpoint does not exist',
+        method: req.method,
+        path: req.path
+    });
+});
+
+// Catch-all for non-API routes
 app.get('*', (req, res) => {
-    if (req.path.startsWith('/api/')) {
-        return res.status(404).json({
-            success: false,
-            message: 'API endpoint not found',
-            error: 'The requested API endpoint does not exist',
-            path: req.path
-        });
-    }
-    
     // Return a simple message for non-API routes
     res.status(404).json({
         success: false,
