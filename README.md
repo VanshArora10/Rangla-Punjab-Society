@@ -91,6 +91,12 @@ NGO/
 
 ## 🌐 Deployment
 
+### ⚠️ Important: Fix for Render Deployment
+
+If you're getting errors like "ENOENT: no such file or directory, stat '/opt/render/project/src/Frontend/dist/index.html'" on Render, it means the frontend wasn't built during deployment. 
+
+**Solution:** Use the `render.yaml` file provided in this repository, or manually set the build command to include frontend building.
+
 ### Production Deployment (Recommended)
 
 The application is now configured to serve both frontend and backend from a single server, making deployment much simpler:
@@ -118,14 +124,18 @@ The server will automatically serve the React frontend from the `Frontend/dist/`
 
 ### Render Deployment
 
-This project is optimized for Render deployment:
+This project includes a `render.yaml` file for easy deployment:
 
 1. **Connect your GitHub repository to Render**
-2. **Set environment variables** in Render dashboard:
-   - `MONGO_URI`: Your MongoDB connection string
-   - `NODE_ENV`: production
-3. **Build Command**: `cd Frontend && npm install && npm run build`
-4. **Start Command**: `cd Backend && npm install && npm start`
+2. **Use the render.yaml file** for automatic service creation
+3. **Set environment variables** in Render dashboard:
+   - `MONGO_URI`: Your MongoDB connection string (required)
+   - `NODE_ENV`: production (automatically set)
+   - `PORT`: 10000 (automatically set)
+
+**Alternative Manual Setup:**
+- **Build Command**: `cd Frontend && npm install && npm run build && cd ../Backend && npm install`
+- **Start Command**: `cd Backend && npm start`
 
 ### Development vs Production
 

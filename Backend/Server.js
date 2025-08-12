@@ -51,24 +51,52 @@ app.get('/api/health', (req, res) => {
 app.use("/api/donations", donationRoutes);
 app.use("/api/contact", contactRoutes);
 
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, '../Frontend/dist')));
+// Check if frontend build exists
+const frontendDistPath = path.join(__dirname, '../Frontend/dist');
+const frontendIndexPath = path.join(frontendDistPath, 'index.html');
 
-// Handle React Router - send index.html for all non-API routes
-app.get('*', (req, res) => {
-    // Don't serve index.html for API routes
-    if (req.path.startsWith('/api/')) {
-        return res.status(404).json({
-            success: false,
-            message: 'API endpoint not found',
-            error: 'The requested API endpoint does not exist',
-            path: req.path
-        });
-    }
+// Serve static files from the React app build directory (if it exists)
+if (require('fs').existsSync(frontendDistPath)) {
+    app.use(express.static(frontendDistPath));
     
-    // Serve index.html for all other routes (React Router)
-    res.sendFile(path.join(__dirname, '../Frontend/dist/index.html'));
-});
+    // Handle React Router - send index.html for all non-API routes
+    app.get('*', (req, res) => {
+        // Don't serve index.html for API routes
+        if (req.path.startsWith('/api/')) {
+            return res.status(404).json({
+                success: false,
+                message: 'API endpoint not found',
+                error: 'The requested API endpoint does not exist',
+                path: req.path
+            });
+        }
+        
+        // Serve index.html for all other routes (React Router)
+        res.sendFile(frontendIndexPath);
+    });
+} else {
+    // Frontend not built - serve API only
+    console.log('⚠️  Frontend build not found. Serving API only.');
+    
+    app.get('*', (req, res) => {
+        if (req.path.startsWith('/api/')) {
+            return res.status(404).json({
+                success: false,
+                message: 'API endpoint not found',
+                error: 'The requested API endpoint does not exist',
+                path: req.path
+            });
+        }
+        
+        // Return a simple message for non-API routes
+        res.status(404).json({
+            success: false,
+            message: 'Frontend not built. Please build the frontend first.',
+            error: 'The frontend application has not been built yet.',
+            instructions: 'Run "cd Frontend && npm run build" to build the frontend.'
+        });
+    });
+}
 
 // Global error handler
 app.use((error, req, res, next) => {
