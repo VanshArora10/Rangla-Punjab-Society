@@ -56,8 +56,8 @@ const Contact = () => {
         
         try {
             const result = await apiPost('/api/contact', formData);
-            
-            showSuccess(result.message || 'Thank you! Your message has been sent successfully.');
+
+            showSuccess(result?.message || 'Thank you! Your message has been sent successfully.');
             setFormData({
                 firstName: '',
                 lastName: '',
@@ -286,6 +286,7 @@ const Contact = () => {
                             </div>
 
                             <button
+                                
                                 type="submit"
                                 disabled={isSubmitting}
                                 className={`w-full text-white font-semibold py-4 px-6 rounded-xl transform transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 ${

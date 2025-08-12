@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Info, CheckCircle, AlertCircle, Loader, Shield, Award, Users } from 'lucide-react';
+import { apiPost } from '../utils/api';
 
 const DonateNowPage = () => {
     const [formData, setFormData] = useState({
@@ -130,20 +131,37 @@ const DonateNowPage = () => {
         setSubmitStatus(null);
 
         try {
-            const response = await fetch('http://localhost:5000/api/donations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            // Transform data to match backend schema
+            const donationData = {
+                donor: {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    email: formData.email,
+                    phone: formData.phone,
+                    address: {
+                        street: formData.address,
+                        city: formData.city,
+                        state: formData.state,
+                        zipCode: formData.postcode,
+                        country: 'India'
+                    }
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    amount: parseFloat(formData.amount)
-                }),
-            });
+                donation: {
+                    amount: parseFloat(formData.amount),
+                    currency: 'INR',
+                    type: 'one-time',
+                    category: 'general',
+                    anonymous: !formData.publicVisibility
+                },
+                payment: {
+                    method: 'bank-transfer'
+                },
+                notes: formData.orderNotes || `Donation Purpose: ${formData.donationPurpose}${formData.preferredSector ? `, Preferred Sector: ${formData.preferredSector}` : ''}`
+            };
 
-            const data = await response.json();
+            const data = await apiPost('/api/donations', donationData);
 
-            if (response.ok) {
+            if (data && data.success) {
                 setSubmitStatus('success');
                 setSubmitMessage('Thank you for your generous donation! Your contribution will make a real difference. You will receive a tax exemption certificate via email within 24 hours.');
                 // Reset form on success
@@ -167,12 +185,12 @@ const DonateNowPage = () => {
                 setErrors({});
             } else {
                 // Handle validation errors from backend
-                if (data.errors && Array.isArray(data.errors)) {
+                if (data?.errors && Array.isArray(data.errors)) {
                     setSubmitStatus('error');
                     setSubmitMessage(`Please fix the following errors: ${data.errors.join(', ')}`);
                 } else {
                     setSubmitStatus('error');
-                    setSubmitMessage(data.message || 'Failed to submit donation. Please try again.');
+                    setSubmitMessage((data && data.message) || 'Failed to submit donation. Please try again.');
                 }
             }
         } catch (error) {

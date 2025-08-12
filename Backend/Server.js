@@ -21,17 +21,24 @@ app.use(express.json({ limit: '10mb' })); // Parse JSON body
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Parse URL encoded data
 
 // CORS configuration for separate frontend/backend deployment
-const corsOptions = {
-    origin: [
-        process.env.FRONTEND_URL || 'http://localhost:5173',
-        'https://your-frontend-domain.com', // Replace with your actual frontend URL
-        'http://localhost:3000',
-        'http://localhost:5173'
-    ],
+const allowedOrigins = [
+    ...((process.env.FRONTEND_URL || '')
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean)),
+    'http://localhost:3000',
+    'http://localhost:5173'
+];
+
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true); // Allow non-browser or same-origin
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error(`Not allowed by CORS: ${origin}`));
+    },
     credentials: true,
     optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+}));
 
 app.use(helmet()); // Secure HTTP headers
 app.use(
