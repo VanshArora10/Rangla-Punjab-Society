@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Logo from '../assets/Logo.jpg';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -7,6 +7,9 @@ const Header = () => {
     const [scrolled, setScrolled] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    const [aboutOpen, setAboutOpen] = useState(false);
+    const [aboutMobileOpen, setAboutMobileOpen] = useState(false);
+    const aboutCloseTimerRef = useRef(null);
     const location = useLocation();
 
     // Handle scroll effect with hide/show behavior
@@ -30,9 +33,11 @@ const Header = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY]);
 
-    // Close mobile menu when route changes
+    // Close menus when route changes
     useEffect(() => {
         setMenuOpen(false);
+        setAboutOpen(false);
+        setAboutMobileOpen(false);
     }, [location]);
 
     // Close mobile menu on escape key
@@ -58,14 +63,38 @@ const Header = () => {
 
     const navItems = [
         { to: '/', label: 'Home' },
-        { to: '/about', label: 'About Us' },
         { to: '/focus-areas', label: 'Focus Areas' },
         { to: '/key-partner', label: 'Key Partner' },
         { to: '/contact', label: 'Contact Us' }
     ];
 
-    const isActivePage = (path) => {
-        return location.pathname === path;
+    const aboutItems = [
+        { to: '/about', label: 'Overview' },
+        { to: '/about/core-team', label: 'Core Team' },
+        { to: '/about/governing-council', label: 'Governing Council' },
+        { to: '/about/executive-council', label: 'Executive Council' },
+        { to: '/about/advisory-board', label: 'Advisory Board' }
+    ];
+
+    const isActivePage = (path) => location.pathname === path;
+    const isAboutActive = () => location.pathname.startsWith('/about');
+
+    const openAbout = () => {
+        if (aboutCloseTimerRef.current) {
+            clearTimeout(aboutCloseTimerRef.current);
+            aboutCloseTimerRef.current = null;
+        }
+        setAboutOpen(true);
+    };
+
+    const scheduleCloseAbout = () => {
+        if (aboutCloseTimerRef.current) {
+            clearTimeout(aboutCloseTimerRef.current);
+        }
+        aboutCloseTimerRef.current = setTimeout(() => {
+            setAboutOpen(false);
+            aboutCloseTimerRef.current = null;
+        }, 250);
     };
 
     return (
@@ -102,7 +131,80 @@ const Header = () => {
 
                         {/* Desktop Navigation */}
                         <div className="hidden lg:flex items-center space-x-1">
-                            {navItems.map(({ to, label }) => (
+                            {/* Home first */}
+                            <Link
+                                to="/"
+                                className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-blue-900 ${
+                                    isActivePage('/')
+                                        ? 'text-blue-900 bg-yellow-600 shadow-md'
+                                        : 'text-white hover:text-blue-900 hover:bg-yellow-600/90'
+                                }`}
+                                aria-current={isActivePage('/') ? 'page' : undefined}
+                            >
+                                <span className="relative z-10">Home</span>
+                                {isActivePage('/') && (
+                                    <div className="absolute inset-0 bg-yellow-600 rounded-lg shadow-inner" />
+                                )}
+                            </Link>
+
+                            {/* About with dropdown */}
+                            <div 
+                                className="relative"
+                                onMouseEnter={openAbout}
+                                onMouseLeave={scheduleCloseAbout}
+                                onFocus={openAbout}
+                                onBlur={(e) => {
+                                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                                        scheduleCloseAbout();
+                                    }
+                                }}
+                            >
+                                <button
+                                    className={`relative px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-offset-2 focus:ring-offset-blue-900 ${
+                                        isAboutActive()
+                                            ? 'text-blue-900 bg-yellow-600 shadow-md'
+                                            : 'text-white hover:text-blue-900 hover:bg-yellow-600/90'
+                                    }`}
+                                    aria-haspopup="menu"
+                                    aria-expanded={aboutOpen}
+                                    aria-controls="about-dropdown"
+                                    onClick={() => setAboutOpen((v) => !v)}
+                                >
+                                    <div className="relative z-10 flex items-center gap-2">
+                                        <span>About Us</span>
+                                        <svg className={`w-4 h-4 transition-transform ${aboutOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.188l3.71-3.958a.75.75 0 111.08 1.04l-4.24 4.523a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z" clipRule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    {isAboutActive() && (
+                                        <div className="absolute inset-0 bg-yellow-600 rounded-lg shadow-inner z-0" />
+                                    )}
+                                </button>
+                                {/* Dropdown Menu */}
+                                <div
+                                    id="about-dropdown"
+                                    className={`absolute left-0 top-full w-72 bg-transparent transform transition-all duration-200 ${aboutOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}
+                                    role="menu"
+                                    onMouseEnter={openAbout}
+                                    onMouseLeave={scheduleCloseAbout}
+                                >
+                                    <div className="bg-white rounded-2xl shadow-2xl ring-1 ring-blue-900/10 overflow-hidden py-2" onMouseEnter={openAbout} onMouseLeave={scheduleCloseAbout}>
+                                        {aboutItems.map(({ to, label }) => (
+                                            <Link
+                                                key={to}
+                                                to={to}
+                                                className={`block px-4 py-2.5 text-sm ${isActivePage(to) ? 'bg-yellow-50 text-blue-900' : 'text-blue-900 hover:bg-yellow-100'} transition-colors`}
+                                                role="menuitem"
+                                            >
+                                                {label}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Remaining nav items */}
+                            {navItems.filter(({ to }) => to !== '/').map(({ to, label }) => (
                                 <Link
                                     key={to}
                                     to={to}
@@ -180,7 +282,59 @@ const Header = () => {
                 >
                     <div className="bg-white rounded-2xl shadow-2xl ring-1 ring-blue-900/10 overflow-hidden">
                         <div className="px-2 py-3">
-                            {navItems.map(({ to, label }, index) => (
+                            {/* Home first */}
+                            <Link
+                                to="/"
+                                className={`block px-4 py-3 text-blue-900 hover:bg-yellow-600 hover:text-white rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-inset ${
+                                    isActivePage('/') ? 'bg-yellow-600 text-white shadow-sm' : ''
+                                }`}
+                                aria-current={isActivePage('/') ? 'page' : undefined}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span>Home</span>
+                                    {isActivePage('/') && (
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    )}
+                                </div>
+                            </Link>
+
+                            {/* About with collapsible submenu */}
+                            <button
+                                onClick={() => setAboutMobileOpen((v) => !v)}
+                                className={`w-full px-4 py-3 text-left text-blue-900 hover:bg-yellow-600 hover:text-white rounded-xl font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-600 focus:ring-inset ${
+                                    isAboutActive() ? 'bg-yellow-600 text-white shadow-sm' : ''
+                                }`}
+                                aria-expanded={aboutMobileOpen}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <span>About Us</span>
+                                    <svg className={`w-4 h-4 transition-transform ${aboutMobileOpen ? 'rotate-180' : ''}`} viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.188l3.71-3.958a.75.75 0 111.08 1.04l-4.24 4.523a.75.75 0 01-1.08 0L5.25 8.27a.75.75 0 01-.02-1.06z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <div className={`mt-2 grid overflow-hidden transition-all ${aboutMobileOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'} duration-300`}>
+                                <div className="overflow-hidden">
+                                    <div className="flex flex-col gap-1 pl-2">
+                                        {aboutItems.map(({ to, label }) => (
+                                            <Link
+                                                key={to}
+                                                to={to}
+                                                className={`block px-4 py-2 text-blue-900 hover:bg-yellow-100 rounded-lg font-medium transition-colors ${
+                                                    isActivePage(to) ? 'bg-yellow-50' : ''
+                                                }`}
+                                            >
+                                                {label}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Remaining items */}
+                            {navItems.filter(({ to }) => to !== '/').map(({ to, label }, index) => (
                                 <Link
                                     key={to}
                                     to={to}

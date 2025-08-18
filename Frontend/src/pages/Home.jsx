@@ -180,77 +180,10 @@ const Home = () => {
             </section>
 
             {/* Key Highlights Section */}
-            <section className="py-16 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-                            Punjab Advantage
-                        </h2>
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                            Key factors that make Punjab an ideal destination for growth and investment.
-                        </p>
-                    </div>
-
-                    <div className="grid lg:grid-cols-3 gap-8">
-                        {/* Production Advantages */}
-                        <div className="bg-white rounded-2xl shadow-lg p-8 border-t-4 border-yellow-500 hover:shadow-xl transition-shadow duration-300">
-                            <div className="flex items-center mb-6">
-                                <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mr-4">
-                                    <FaCheckCircle className="text-white text-lg" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-900">Production Factors</h3>
-                            </div>
-                            <ul className="space-y-3">
-                                {advantages.map((item, index) => (
-                                    <li key={index} className="flex items-start text-gray-700 text-sm">
-                                        <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Education & Research */}
-                        <div className="bg-white rounded-2xl shadow-lg p-8 border-t-4 border-blue-600 hover:shadow-xl transition-shadow duration-300">
-                            <div className="flex items-center mb-6">
-                                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mr-4">
-                                    <MdComputer className="text-white text-lg" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-900">Education Hub</h3>
-                            </div>
-                            <ul className="space-y-3">
-                                {educationFeatures.map((item, index) => (
-                                    <li key={index} className="flex items-start text-gray-700 text-sm">
-                                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Centers of Excellence */}
-                        <div className="bg-white rounded-2xl shadow-lg p-8 border-t-4 border-yellow-500 hover:shadow-xl transition-shadow duration-300">
-                            <div className="flex items-center mb-6">
-                                <div className="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mr-4">
-                                    <MdEngineering className="text-white text-lg" />
-                                </div>
-                                <h3 className="text-xl font-bold text-blue-900">R&D Excellence</h3>
-                            </div>
-                            <ul className="space-y-3">
-                                {excellenceCenters.map((item, index) => (
-                                    <li key={index} className="flex items-start text-gray-700 text-sm">
-                                        <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
+           
 
             {/* Focus Sectors Section */}
-            <section className="py-16 bg-white">
+            {/* <section className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
@@ -275,9 +208,28 @@ const Home = () => {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section> */}
 
             {/* About Us Section */}
+         
+
+            {/* Mission & Policies Section */}
+        
+
+            {/* Banner Section */}
+            <section className="py-16 bg-gradient-to-r from-blue-900 to-blue-800">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="relative group">
+                        <img
+                            src={bannerImage}
+                            alt="Punjab initiatives banner"
+                            className="w-full h-auto rounded-2xl shadow-2xl transform group-hover:scale-[1.02] transition-transform duration-300"
+                        />
+                        <div className="absolute inset-0  rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
+                </div>
+            </section>
+
             <section className="py-16 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -313,101 +265,8 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Mission & Policies Section */}
-            <section className="py-16 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-                            Our Mission & Policies
-                        </h2>
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                            Driving Punjab's development through strategic policies and world-class infrastructure.
-                        </p>
-                    </div>
-
-                    <div className="grid lg:grid-cols-2 gap-8">
-                        {/* Investment Policy */}
-                        <div className="group bg-gradient-to-br from-blue-50 to-blue-100 hover:from-yellow-50 hover:to-yellow-100 rounded-2xl p-8 border border-blue-200 hover:border-yellow-500 transition-all duration-300 hover:shadow-lg">
-                            <div className="bg-blue-600 group-hover:bg-yellow-500 text-white px-6 py-3 rounded-xl inline-block mb-6 transition-colors duration-300">
-                                <h3 className="font-bold text-lg">Investment Friendly Policy</h3>
-                            </div>
-                            <h4 className="text-xl font-bold text-blue-900 mb-4">Industrial & Business Development Policy 2022</h4>
-                            <ul className="space-y-3">
-                                <li className="flex items-start text-gray-700 text-sm">
-                                    <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                    SGST reimbursement up to 200% of FCI for up to 20 years
-                                </li>
-                                <li className="flex items-start text-gray-700 text-sm">
-                                    <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                    Employment incentive: Up to ₹48,000/year per worker
-                                </li>
-                                <li className="flex items-start text-gray-700 text-sm">
-                                    <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                    Up to 100% exemption: CLU & EDC charges
-                                </li>
-                                <li className="flex items-start text-gray-700 text-sm">
-                                    <span className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                    Electricity duty exemption for 15 years
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Quality of Life */}
-                        <div className="group bg-gradient-to-br from-yellow-50 to-yellow-100 hover:from-blue-50 hover:to-blue-100 rounded-2xl p-8 border border-yellow-500 hover:border-blue-600 transition-all duration-300 hover:shadow-lg">
-                            <div className="bg-yellow-500 group-hover:bg-blue-600 text-white px-6 py-3 rounded-xl inline-block mb-6 transition-colors duration-300">
-                                <h3 className="font-bold text-lg">Quality of Life & Connectivity</h3>
-                            </div>
-                            <h4 className="text-xl font-bold text-blue-900 mb-4">Mohali – A Global-standard Urban Hub</h4>
-                            <ul className="space-y-3">
-                                {qualityFeatures.map(({ title, desc }, index) => (
-                                    <li key={index} className="flex items-start text-gray-700 text-sm">
-                                        <span className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                                        <span><strong>{title}:</strong> {desc}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* Banner Section */}
-            <section className="py-16 bg-gradient-to-r from-blue-900 to-blue-800">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="relative group">
-                        <img
-                            src={bannerImage}
-                            alt="Punjab initiatives banner"
-                            className="w-full h-auto rounded-2xl shadow-2xl transform group-hover:scale-[1.02] transition-transform duration-300"
-                        />
-                        <div className="absolute inset-0  rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </div>
-                </div>
-            </section>
-
             {/* Top Institutes Section */}
-            <section className="py-16 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold text-blue-900 mb-4">
-                            Leading Institutions
-                        </h2>
-                        <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                            World-class institutions powering Punjab's knowledge economy and research excellence.
-                        </p>
-                    </div>
-                    <div className="text-center">
-                        <div className="relative group inline-block">
-                            <img
-                                src={topInstituteImage}
-                                alt="Top educational institutes in Punjab"
-                                className="w-full max-w-4xl mx-auto rounded-2xl shadow-xl transform group-hover:scale-[1.02] transition-transform duration-300"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+           
 
             {/* Video Modal */}
             {playingVideo && (
